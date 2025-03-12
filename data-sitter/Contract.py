@@ -1,20 +1,20 @@
-import re
-from typing import Dict, Type
+from typing import Dict, List, Type
 
 from pydantic import BaseModel
-from rules import Resolver
+from rules import SolvedRule, Resolver
 from field_types import BaseField
-
-res = Resolver()
 
 
 class Contract:
     name: str
     field_validators: Dict[str, BaseField]
+    rules: Dict[str, List[SolvedRule]]
+
 
     def __init__(self, name) -> None:
         self.name: str = name
         self.field_validators = {}
+        self.rules = {}
 
     @classmethod
     def from_dict(cls, contract_dict: dict):
@@ -28,14 +28,15 @@ class Contract:
 
         for field in contract_dict["fields"]:
             field_type = field["field_type"]
-            field_type_class: Type[BaseField] = Resolver.get_type(field_type)
+            contract.rules[field["field_name"]] = []
 
+            field_type_class: Type[BaseField] = Resolver.get_type(field_type)
             field_instance = field_type_class(field["field_name"])
 
             for field_rule in field["field_rules"]:
-                field_rule = replace_reference_for_values(field_rule, values)
-                validator_rule, validator_params = res.resolve(field_type, field_rule)
-                validator_rule(self=field_instance, **validator_params)
+                rule = SolvedRule(field_type_class, field_rule, values)
+                rule.add_to_instance(field_instance)
+                contract.rules[field["field_name"]].append(rule)
             contract.field_validators[field["field_name"]] = field_instance
 
         return contract
@@ -51,17 +52,25 @@ class Contract:
                 for field_name, field_validator in self.field_validators.items()
             }
         })
-
-def replace_reference_for_values(rule: str, values: dict) -> str:
-    def replace_match(match):
-        key = match.group(1)
-        if key not in values:
-            raise KeyError(f"Key '{key}' not found in values")
-        return repr(values.get(key))
-    # Regex to match references like $values.key
-    pattern = r'\$values\.([a-zA-Z0-9_]+)'
-    # Replace all matches in the rule
-    return re.sub(pattern, replace_match, rule)
+    
+    def get_front_end_contract(self):
+        return {
+            "name": self.name,
+            "fields": [
+                {
+                    "field_name": field_name,
+                    "field_type": field_validator.__class__.__name__,
+                    "field_rules": [
+                        {
+                            "rule": rule.rule_alias,
+                            "rule_params": rule.original_params
+                        }
+                        for rule in self.rules[field_name]
+                    ]
+                }
+                for field_name, field_validator in self.field_validators.items()
+            ]
+        }
 
 
 class ContractWithoutFields(Exception):

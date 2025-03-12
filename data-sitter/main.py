@@ -61,9 +61,8 @@ item_example = {
 
 
 contract_validator = Contract.from_dict(contract_example)
-pydantic_model = contract_validator.get_pydantic_model()
-pydantic_model.model_validate(item_example)
 contract_validator.model_validate(item_example)
+# prettyp(contract_validator.get_front_end_contract())
 
 
-prettyp(Resolver.get_rules())
+# prettyp(Resolver.get_rules_definition())

@@ -39,12 +39,12 @@ class BaseField(ABC):
         return Annotated[self.field_type, AfterValidator(aggregated_validator(self.validators))]
 
     @classmethod
-    def get_field_ancestors(cls: Type["BaseField"]) -> List[Type["BaseField"]]:
+    def get_parents(cls: Type["BaseField"]) -> List[Type["BaseField"]]:
         if cls.__name__ == "BaseField":
             return []
         ancestors = []
         for base in cls.__bases__:
             if base.__name__.endswith("Field"):
-                ancestors.append(base.__name__)
-                ancestors.extend(base.get_field_ancestors())  # It wont break because we have a base case
+                ancestors.append(base)
+                ancestors.extend(base.get_parents())  # It wont break because we have a base case
         return ancestors

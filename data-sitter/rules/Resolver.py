@@ -43,32 +43,34 @@ class Resolver:
     def get_type(cls, field_type: str) -> Type["BaseField"]:
         return cls.type_map.get(field_type)
 
-    def resolve(self, field_type: str, rule_str: str) -> Rule:
-        type_rules: List[Rule] = self._get_validators_for_type(field_type)
+    @classmethod
+    def get_rules_for(cls, field_class: Type["BaseField"]):
+        return list(cls.rules[field_class.__name__])
+
+    def resolve(self, field_class: Type["BaseField"], rule_str: str) -> Rule:
+        type_rules: List[Rule] = self._get_validators_for_type(field_class)
         if type_rules is None:
             raise TypeNotImplemented()
 
         rules = [rule for validator in type_rules if (rule := validator.match(rule_str)) is not None]
         if not rules:
-            logger.error(" Rule '%s' not in %s or subtypes", rule_str, field_type)
-            raise RuleNotFound(f"Rule '{rule_str}' not in {field_type} or subtypes")
+            raise RuleNotFound(f"Rule '{rule_str}' not in {field_class} or subtypes")
         if len(rules) > 1:
             raise AmbiguousRuleSolution()
         return rules[0]
 
-    @classmethod
-    def _get_validators_for_type(cls, field_type: str) -> List[Rule]:
-        possible_validators = list(cls.rules[field_type])
-        for parent_field_type in cls.get_type(field_type).get_field_ancestors():
-            possible_validators.extend(cls._get_validators_for_type(parent_field_type))
+    def _get_validators_for_type(self, field_class: Type["BaseField"]) -> List[Rule]:
+        possible_validators = self.get_rules_for(field_class)
+        for parent_field_type in field_class.get_parents():
+            possible_validators.extend(self._get_validators_for_type(parent_field_type))
         return possible_validators
 
     @classmethod
-    def get_rules(cls):
+    def get_rules_definition(cls):
         return [
             {
                 "field": field_name,
-                "parent_field": field_class.get_field_ancestors(),
+                "parent_field": [p.__name__ for p in field_class.get_parents()],
                 "rules": cls.rules.get(field_name, [])
             }
             for field_name, field_class in cls.type_map.items()
@@ -97,11 +99,9 @@ def validate_alias_function_params(alias: str, func: callable):
         raise AliasFunctionParamsMismatch()
 
 
-
-
-
 class RuleNotFound(Exception):
     pass
+
 
 class NotAClassMethod(Exception):
     pass

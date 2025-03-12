@@ -31,7 +31,7 @@ class Rule:
         match = self.alias_parser.parse(rule_str)
         if match is None:
             return
-        return self.rule_setter, match.named
+        return self.rule_setter, match.named, self.rule_alias
 
     def __repr__(self):
         return self.rule_alias
