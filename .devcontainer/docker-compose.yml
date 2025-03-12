@@ -1,0 +1,37 @@
+networks:
+  data_sitter_network:
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    container_name: data_sitter_devc
+    volumes:
+      - ..:/workspace:cached
+      - data_sitter_venv:/workspace/.venv
+      # - data_sitter_node:/workspace/ui/node_modules
+    command: sleep infinity
+    networks:
+      - data_sitter_network
+
+  # postgres:
+  #   image: postgres:17-bookworm
+  #   container_name: data_sitter_db
+  #   restart: always
+  #   env_file:
+  #     - ../.env
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - data_sitter_network
+
+volumes:
+  data_sitter_venv:
+    driver: local
+  # postgres_data:
+  #   driver: local
+  # data_sitter_node:
+  #   driver: local

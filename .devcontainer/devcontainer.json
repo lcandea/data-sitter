@@ -1,0 +1,44 @@
+{
+    "name": "data-sitter",
+    "dockerComposeFile": ["./docker-compose.yml"],
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "containerEnv": {
+        "PYTHONPATH": "/workspace/data-sitter"
+    },
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+                "python.venvPath": "${containerWorkspaceFolder}",
+                "python.venvFolders": [".venv"],
+                "python.analysis.extraPaths": ["${containerWorkspaceFolder}/api"],
+                "terminal.integrated.profiles.linux": {
+                    "Bash": {
+                        "path": "/bin/bash"
+                    }
+                },
+                "terminal.integrated.defaultProfile.windows": "Bash"
+            },
+            "extensions": [
+                "pkief.material-icon-theme",
+                "ms-vsliveshare.vsliveshare",
+                "mechatroner.rainbow-csv",
+                "oderwat.indent-rainbow",
+                "ms-azuretools.vscode-docker",
+                "ms-python.vscode-pylance",
+                "ms-python.python",
+                "ms-python.pylint",
+                "ms-toolsai.jupyter",
+                "dbaeumer.vscode-eslint"
+            ]
+        }
+    },
+    "forwardPorts": [8080, 5432],
+    "postCreateCommand": "./.devcontainer/postCreate.sh",
+    "remoteUser": "vscode"
+}
