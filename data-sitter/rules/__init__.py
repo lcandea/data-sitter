@@ -1,12 +1,14 @@
 from .Rule import Rule
-from .Resolver import Resolver, register_rule, register_field
-from .SolvedRule import SolvedRule
+from .Parser import RuleParser
+from .MatchedRule import MatchedRule
+from .RuleRegistry import RuleRegistry, register_rule, register_field
 
 
 __all__ = [
     "Rule",
-    "Resolver",
-    "SolvedRule",
+    "MatchedRule",
+    "RuleParser",
+    "RuleRegistry",
     "register_rule",
     "register_field",
 ]

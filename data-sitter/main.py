@@ -1,9 +1,7 @@
 import json
 import logging
 
-from rules import Resolver
 from utils.logger_config import configure_logging
-
 from Contract import Contract
 
 configure_logging()
@@ -59,10 +57,10 @@ item_example = {
     "NAME": "MOWRY MEDICAL PHARMACY",
 }
 
-
 contract_validator = Contract.from_dict(contract_example)
-contract_validator.model_validate(item_example)
+validated_item = contract_validator.model_validate(item_example)
+prettyp(validated_item)
+
 # prettyp(contract_validator.get_front_end_contract())
 
-
-# prettyp(Resolver.get_rules_definition())
+# prettyp(RuleRegistry.get_rules_definition())

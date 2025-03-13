@@ -1,37 +1,44 @@
-import logging
-from parse import Parser
+import string
+from inspect import signature
+from typing import Callable
 
-from rules.alias_parameters_parser import alias_parameters_types
+
+class NotAClassMethod(Exception):
+    pass
 
 
-CASE_SENSITIVE_RULES = False
-
-logger = logging.getLogger(__name__)
+class RuleFunctionParamsMismatch(Exception):
+    pass
 
 
 class Rule:
-    rule_alias: str
-    rule_setter: callable
-    alias_parser: Parser
+    field_type: str
+    field_rule: str
+    rule_setter: Callable
 
-    def __init__(self, rule_alias: str, rule_setter: callable) -> None:
-        self.rule_alias = rule_alias
+    def __init__(self, field_type: str, field_rule: str, rule_setter: Callable) -> None:
+        self.field_type = field_type
+        self.field_rule = field_rule
         self.rule_setter = rule_setter
-        self.alias_parser = Parser(rule_alias, extra_types=alias_parameters_types, case_sensitive=CASE_SENSITIVE_RULES)
-
-    # @classmethod
-    # def add_parser(cls, parser: Parser) -> None:
-    #     cls._class_parser = parser
-
-    # @classmethod
-    # def register_type(cls, **kwargs) -> None:
-    #     cls._class_parser.register_type(**kwargs)
-
-    def match(self, rule_str: str):
-        match = self.alias_parser.parse(rule_str)
-        if match is None:
-            return
-        return self.rule_setter, match.named, self.rule_alias
+        self.__validate_rule_function_params()
 
     def __repr__(self):
-        return self.rule_alias
+        return self.field_rule
+
+    @property
+    def rule_params(self) -> dict:
+        params = string.Formatter().parse(self.field_rule)
+        return {param: param_type for _, param, param_type, _ in params if param is not None}
+
+    def __get_rule_setter_params(self) -> set:
+        rule_setter_sign = signature(self.rule_setter)
+        return set(rule_setter_sign.parameters.keys())
+
+    def __validate_rule_function_params(self):
+        rule_setter_params = self.__get_rule_setter_params()
+        if "self" not in rule_setter_params:
+            raise NotAClassMethod()
+
+        rule_setter_params.remove("self")
+        if set(self.rule_params) != rule_setter_params:
+            raise RuleFunctionParamsMismatch(f"Rule Params: {self.rule_params}, Setter Params: {rule_setter_params}")

@@ -1,20 +1,42 @@
-from typing import Dict, List, Type
+from typing import Any, Dict, List, NamedTuple
+from functools import cached_property
 
 from pydantic import BaseModel
-from rules import SolvedRule, Resolver
+
 from field_types import BaseField
+from FieldResolver import FieldResolver
+from rules import MatchedRule, RuleRegistry, RuleParser
+
+
+class ContractWithoutFields(Exception):
+    pass
+
+
+class ContractWithoutName(Exception):
+    pass
+
+
+class Field(NamedTuple):
+    field_name: str
+    field_type: str
+    field_rules: List[str]
 
 
 class Contract:
     name: str
-    field_validators: Dict[str, BaseField]
-    rules: Dict[str, List[SolvedRule]]
+    fields: List[Field]
+    rule_parser: RuleParser
+    field_resolvers: Dict[str, FieldResolver]
 
 
-    def __init__(self, name) -> None:
-        self.name: str = name
-        self.field_validators = {}
-        self.rules = {}
+    def __init__(self, name: str, fields: List[Field], values: Dict[str, Any]) -> None:
+        self.name = name
+        self.fields = fields
+        self.rule_parser = RuleParser(values)
+        self.field_resolvers = {
+            field_type: FieldResolver(RuleRegistry.get_type(field_type), self.rule_parser)
+            for field_type in list({field.field_type for field in self.fields})  # Unique types
+        }
 
     @classmethod
     def from_dict(cls, contract_dict: dict):
@@ -23,23 +45,27 @@ class Contract:
         if "fields" not in contract_dict:
             raise ContractWithoutFields()
 
-        contract = cls(contract_dict["name"])
-        values = contract_dict.get('values', {})
+        return cls(
+            name=contract_dict["name"],
+            fields=[Field(**field) for field in contract_dict["fields"]],
+            values=contract_dict.get("values", {}),
+        )
 
-        for field in contract_dict["fields"]:
-            field_type = field["field_type"]
-            contract.rules[field["field_name"]] = []
+    @cached_property
+    def field_validators(self) -> Dict[str, BaseField]:
+        field_validators = {}
+        for field in self.fields:
+            field_resolver = self.field_resolvers[field.field_type]
+            field_validators[field.field_name] = field_resolver.get_field_validator(field.field_name, field.field_rules)
+        return field_validators
 
-            field_type_class: Type[BaseField] = Resolver.get_type(field_type)
-            field_instance = field_type_class(field["field_name"])
-
-            for field_rule in field["field_rules"]:
-                rule = SolvedRule(field_type_class, field_rule, values)
-                rule.add_to_instance(field_instance)
-                contract.rules[field["field_name"]].append(rule)
-            contract.field_validators[field["field_name"]] = field_instance
-
-        return contract
+    @cached_property
+    def rules(self) -> Dict[str, List[MatchedRule]]:
+        rules = {}
+        for field in self.fields:
+            field_resolver = self.field_resolvers[field.field_type]
+            rules[field.field_name] = field_resolver.get_matched_rules(field.field_rules)
+        return rules
 
     def model_validate(self, item: dict):
         pydantic_model = self.get_pydantic_model()
@@ -52,7 +78,7 @@ class Contract:
                 for field_name, field_validator in self.field_validators.items()
             }
         })
-    
+
     def get_front_end_contract(self):
         return {
             "name": self.name,
@@ -62,20 +88,14 @@ class Contract:
                     "field_type": field_validator.__class__.__name__,
                     "field_rules": [
                         {
-                            "rule": rule.rule_alias,
-                            "rule_params": rule.original_params
+                            "rule": rule.field_rule,
+                            "parsed_rule": rule.parsed_rule,
+                            "rule_params": rule.rule_params,
+                            "parsed_values": rule.parsed_values,
                         }
-                        for rule in self.rules[field_name]
+                        for rule in self.rules.get(field_name, [])
                     ]
                 }
                 for field_name, field_validator in self.field_validators.items()
             ]
         }
-
-
-class ContractWithoutFields(Exception):
-    pass
-
-
-class ContractWithoutName(Exception):
-    pass
