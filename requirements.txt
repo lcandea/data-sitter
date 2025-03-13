@@ -1,3 +1,4 @@
+setuptools
 parse-type
 python-dotenv
 pydantic
