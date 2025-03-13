@@ -3,3 +3,6 @@
 .env
 __pycache__
 data_sitter.egg-info
+dist
+build
+
