@@ -1,6 +1,7 @@
 from typing import Union
-from field_types.BaseField import BaseField
-from rules import register_rule, register_field
+
+from .BaseField import BaseField
+from ..rules import register_rule, register_field
 
 Numeric = Union[int, float]
 

@@ -2,7 +2,8 @@ import csv
 import json
 import argparse
 from pathlib import Path
-from Contract import Contract
+
+from .Contract import Contract
 
 
 DEFAULT_ENCODING = "utf8"

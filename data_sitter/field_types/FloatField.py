@@ -1,5 +1,5 @@
-from field_types.NumericField import NumericField
-from rules import register_field
+from .NumericField import NumericField
+from ..rules import register_field
 
 
 @register_field

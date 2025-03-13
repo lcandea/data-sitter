@@ -1,3 +1,4 @@
+import logging
 import logging.config
 from os import environ
 
@@ -35,3 +36,8 @@ def configure_logging():
             "loggers": {"": {"handlers": ["default"], "level": LOG_LEVEL, "propagate": True}},  # root logger
         }
     )
+
+configure_logging()
+
+def get_logger(name: str):
+    return logging.getLogger(name)

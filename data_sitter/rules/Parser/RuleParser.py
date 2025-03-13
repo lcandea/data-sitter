@@ -3,11 +3,10 @@ from typing import Callable, Dict, Optional
 from parse import with_pattern, Parser
 from parse_type import TypeBuilder
 
-
-from ..Rule import Rule
-from ..MatchedRule import MatchedRule
 from .parser_utils import REF_PATTERN, get_value_from_reference, get_key_from_reference
 from .alias_parameters_parser import NotCompatibleTypes, alias_parameters_types
+from ..Rule import Rule
+from ..MatchedRule import MatchedRule
 
 
 CASE_SENSITIVE_RULES = False

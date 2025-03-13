@@ -1,8 +1,9 @@
 
 from typing import  Dict, List, Type
-from field_types import BaseField
-from rules import MatchedRule, Rule, RuleRegistry
-from rules.Parser import RuleParser
+
+from .field_types import BaseField
+from .rules import MatchedRule, Rule, RuleRegistry
+from .rules.Parser import RuleParser
 
 
 class RuleNotFoundError(Exception):

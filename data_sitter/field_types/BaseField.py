@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Annotated, List, Type
 
 from pydantic import AfterValidator
-from rules import register_rule, register_field
+from ..rules import register_rule, register_field
 
 
 def aggregated_validator(validators: List[callable]):

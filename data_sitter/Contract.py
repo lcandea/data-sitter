@@ -3,9 +3,9 @@ from functools import cached_property
 
 from pydantic import BaseModel
 
-from field_types import BaseField
-from FieldResolver import FieldResolver
-from rules import MatchedRule, RuleRegistry, RuleParser
+from .field_types import BaseField
+from .FieldResolver import FieldResolver
+from .rules import MatchedRule, RuleRegistry, RuleParser
 
 
 class ContractWithoutFields(Exception):

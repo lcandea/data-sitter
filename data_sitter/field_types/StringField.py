@@ -1,7 +1,7 @@
 from typing import List
 
-from rules import register_rule, register_field
-from field_types.BaseField import BaseField
+from .BaseField import BaseField
+from ..rules import register_rule, register_field
 
 
 @register_field

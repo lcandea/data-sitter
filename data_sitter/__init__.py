@@ -1,5 +1,5 @@
-from Contract import Contract
+from .Contract import Contract
 
-__all__ = {
+__all__ = [
     "Contract",
-}
+]

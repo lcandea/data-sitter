@@ -1,16 +1,15 @@
-from collections import defaultdict
 from itertools import chain
-
-import logging
+from collections import defaultdict
 from typing import TYPE_CHECKING, Dict, List, Type
 
 from .Rule import Rule
+from ..utils.logger_config import get_logger
 
 
 if TYPE_CHECKING:
     from field_types.BaseField import BaseField
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class RuleRegistry:
