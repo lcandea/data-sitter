@@ -4,7 +4,7 @@
     "service": "app",
     "workspaceFolder": "/workspace",
     "containerEnv": {
-        "PYTHONPATH": "/workspace/data-sitter"
+        "PYTHONPATH": "/workspace/data_sitter"
     },
     "mounts": [
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",

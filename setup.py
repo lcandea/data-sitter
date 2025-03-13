@@ -12,7 +12,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'data-sitter=cli:main'
+        'data-sitter=data_sitter.cli:main',
         ],
     },
 )

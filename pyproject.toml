@@ -9,3 +9,6 @@ description = "A Python library that reads data contracts and generates Pydantic
 authors = [
     {name = 'Lázaro Pereira Candea', email = 'lazaro@candea.es'},
 ]
+
+[project.scripts]
+data-sitter = "data_sitter.cli:main"
