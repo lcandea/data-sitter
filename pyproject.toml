@@ -9,6 +9,12 @@ description = "A Python library that reads data contracts and generates Pydantic
 authors = [
     {name = 'Lázaro Pereira Candea', email = 'lazaro@candea.es'},
 ]
+dependencies = [
+    # Keep this in sync with setup.py
+    "python-dotenv==1.0.1",
+    "parse_type==0.6.4",
+    "pydantic==2.10.6",
+]
 
 [project.scripts]
 data-sitter = "data_sitter.cli:main"
