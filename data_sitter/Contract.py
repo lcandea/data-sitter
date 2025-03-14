@@ -97,5 +97,6 @@ class Contract:
                     ]
                 }
                 for field_name, field_validator in self.field_validators.items()
-            ]
+            ],
+            "values": self.rule_parser.values
         }
