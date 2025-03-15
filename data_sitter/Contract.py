@@ -1,3 +1,5 @@
+import json
+import yaml
 from typing import Any, Dict, List, NamedTuple
 from functools import cached_property
 
@@ -51,6 +53,14 @@ class Contract:
             fields=[Field(**field) for field in contract_dict["fields"]],
             values=contract_dict.get("values", {}),
         )
+
+    @classmethod
+    def from_json(cls, contract_json: str):
+        return cls.from_dict(json.loads(contract_json))
+
+    @classmethod
+    def from_yaml(cls, contract_yaml: str):
+        return cls.from_dict(yaml.load(contract_yaml, yaml.Loader))
 
     @cached_property
     def field_validators(self) -> Dict[str, BaseField]:
