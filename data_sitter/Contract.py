@@ -3,6 +3,7 @@ from functools import cached_property
 
 from pydantic import BaseModel
 
+from .Validation import Validation
 from .field_types import BaseField
 from .FieldResolver import FieldResolver
 from .rules import MatchedRule, RuleRegistry, RuleParser
@@ -68,10 +69,13 @@ class Contract:
         return rules
 
     def model_validate(self, item: dict):
-        pydantic_model = self.get_pydantic_model()
-        return pydantic_model.model_validate(item).model_dump()
+        return self.pydantic_model.model_validate(item).model_dump()
 
-    def get_pydantic_model(self) -> BaseModel:
+    def validate(self, item: dict) -> Validation:
+        return Validation.validate(self.pydantic_model, item)
+
+    @cached_property
+    def pydantic_model(self) -> BaseModel:
         return type(self.name, (BaseModel,), {
             "__annotations__": {
                 field_name: field_validator.get_annotation()

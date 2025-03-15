@@ -48,7 +48,7 @@ contract_dict = {
 }
 
 contract = Contract.from_dict(contract_dict)
-pydantic_contract = contract.get_pydantic_model()
+pydantic_contract = contract.pydantic_model
 ```
 
 ### Using Rule References
