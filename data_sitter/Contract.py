@@ -93,6 +93,21 @@ class Contract:
             }
         })
 
+    @property
+    def contract(self) -> dict:
+        return {
+            "name": self.name,
+            "fields": [
+                {
+                    "field_name": field_name,
+                    "field_type": field_validator.__class__.__name__,
+                    "field_rules": [rule.parsed_rule for rule in self.rules.get(field_name, [])]
+                }
+                for field_name, field_validator in self.field_validators.items()
+            ],
+            "values": self.rule_parser.values
+        }
+
     def get_front_end_contract(self):
         return {
             "name": self.name,
