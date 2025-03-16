@@ -32,11 +32,13 @@ class StringField(BaseField):
             return value
         self.validators.append(validator)
 
-    @register_rule("Value in {possible_values:Strings}")
-    def validate_in(self, possible_values: List[str]):
+    @register_rule("Value in {possible_values:Strings}", fixed_params={"negative": False})
+    @register_rule("Value not in {possible_values:Strings}", fixed_params={"negative": True})
+    def validate_in(self, possible_values: List[str], negative: bool):
         def validator(value: str):
-            if value not in possible_values:
-                raise ValueError(f"The value '{value}' is not in the list.")
+            condition = value in possible_values
+            if condition if negative else not condition:
+                raise ValueError(f"The value '{value}' {'is' if negative else 'is not'} in the list.")
             return value
         self.validators.append(validator)
 

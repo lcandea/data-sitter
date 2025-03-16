@@ -17,12 +17,12 @@ class RuleRegistry:
     type_map: Dict[str, Type["BaseField"]] = {}
 
     @classmethod
-    def register_rule(cls, field_rule: str):
+    def register_rule(cls, field_rule: str, fixed_params: dict = None):
         def _register(func: callable):
             field_type, func_name = func.__qualname__.split(".")
             logger.debug("Registering function '%s' for %s. Rule: %s", func_name, field_type, field_rule)
 
-            rule = Rule(field_type, field_rule, func)
+            rule = Rule(field_type, field_rule, func, fixed_params)
             cls.rules[field_type].append(rule)
             logger.debug("Function '%s' Registered", func_name)
             return func
@@ -57,8 +57,8 @@ class RuleRegistry:
         ]
 
 
-def register_rule(rule: str):
-    return RuleRegistry.register_rule(rule)
+def register_rule(rule: str, fixed_params: dict = None):
+    return RuleRegistry.register_rule(rule, fixed_params)
 
 
 def register_field(field_class: type):

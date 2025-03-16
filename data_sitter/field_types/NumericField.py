@@ -66,10 +66,12 @@ class NumericField(BaseField):
             return value
         self.validators.append(validator)
 
-    @register_rule("Between {min_val:Number} and {max_val:Number}")
-    def validate_between(self, min_val: Numeric, max_val: Numeric):
+    @register_rule("Between {min_val:Number} and {max_val:Number}", fixed_params={"negative": False})
+    @register_rule("Not between {min_val:Number} and {max_val:Number}", fixed_params={"negative": True})
+    def validate_between(self, min_val: Numeric, max_val: Numeric, negative: bool):
         def validator(value: Numeric):
-            if not (min_val < value < max_val):
-                raise ValueError(f"Value {value} not in Between {min_val} and {max_val}.")
+            condition = (min_val < value < max_val)
+            if condition if negative else not condition:
+                raise ValueError(f"Value {value} {'is' if negative else 'is not'} in Between {min_val} and {max_val}.")
             return value
         self.validators.append(validator)
