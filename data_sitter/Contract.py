@@ -93,7 +93,7 @@ class Contract:
             }
         })
 
-    @property
+    @cached_property
     def contract(self) -> dict:
         return {
             "name": self.name,
@@ -108,7 +108,13 @@ class Contract:
             "values": self.rule_parser.values
         }
 
-    def get_front_end_contract(self):
+    def get_json_contract(self, indent: int=2) -> str:
+        return json.dumps(self.contract, indent=indent)
+
+    def get_yaml_contract(self, indent: int=2) -> str:
+        return yaml.dump(self.contract, Dumper=yaml.Dumper, indent=indent, sort_keys=False)
+
+    def get_front_end_contract(self) -> dict:
         return {
             "name": self.name,
             "fields": [
