@@ -26,13 +26,13 @@ class BaseField(ABC):
         self.is_optional = is_optional
         self.validators = []
 
-    @register_rule("Validate Not Null")
+    @register_rule("Is not null")
     def validator_not_null(self):
         def _validator(value):
             if self.is_optional:
                 return value
             if value is None:
-                raise ValueError("Value cannot be null")
+                raise ValueError("Value cannot be null.")
             return value
 
         self.validators.append(_validator)
