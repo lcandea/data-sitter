@@ -6,25 +6,35 @@ from pydantic import BaseModel, ValidationError
 
 
 class Validation():
-    row: Dict[str, Any]
+    item: Dict[str, Any]
     errors: Dict[str, List[str]]
+    unknowns: Dict[str, Any]
 
-    def __init__(self, row: dict, errors: dict = None):
-        self.row = row
-        self.errors = errors or {}
+    def __init__(self, item: dict, errors: dict = None, unknowns: dict = None):
+        self.item = item
+        self.errors = errors if errors else None
+        self.unknowns = unknowns if unknowns else None
 
     def to_dict(self) -> dict:
-        return {"row": self.row, "errors": self.errors}
-    
+        return {key: value for key in ["item", "errors", "unknowns"] if (value := getattr(self, key))}
+
     @classmethod
-    def validate(cls, model: Type[BaseModel], item: dict) -> "Validation":
+    def validate(cls, PydanticModel: Type[BaseModel], input_item: dict) -> "Validation":
+        model_keys = PydanticModel.model_json_schema()['properties'].keys()
+        item = {key: None for key in model_keys}  # Filling not present values with Nones
+        errors = defaultdict(list)
+        unknowns = {}
+        for key, value in input_item.items():
+            if key in item:
+                item[key] = value
+            else:
+                unknowns[key] = value
         try:
-            row = model(**item)  # Validate the row
-            return Validation(row=row.model_dump())
+            validated = PydanticModel(**item).model_dump()
         except ValidationError as e:
-            errors = defaultdict(list)
+            validated = item
             for error in e.errors():
                 field = error['loc'][0]  # Extract the field name
                 msg = error['msg']
                 errors[field].append(msg)
-            return Validation(row=item, errors=dict(errors))
+        return Validation(item=validated, errors=dict(errors), unknowns=unknowns)
