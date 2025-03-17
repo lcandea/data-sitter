@@ -13,10 +13,8 @@ Data-Sitter is a Python library designed to simplify data validation by converti
 
 ## Installation
 
-You can install Data-Sitter directly from GitHub:
-
 ```sh
-pip install git+https://github.com/Kenr0t/data-sitter.git@main
+pip install data-sitter
 ```
 
 ## Usage
@@ -94,39 +92,46 @@ Below are the available rules grouped by field type:
 
 #### BaseField
 
-- Validate Not Null
+- Is not null
 
 #### StringField - (Inherits from `BaseField`)
 
 - Is not empty
-- Starts with `{prefix:String}`
-- Ends with `{sufix:String}`
-- Value in `{possible_values:Strings}`
-- Length between `{min_val:Integer}` and `{max_val:Integer}`
-- Maximum length of `{max_len:Integer}`
-- Length shorter than `{max_len:Integer}`
-- Minimum length of `{min_len:Integer}`
-- Length longer than `{min_len:Integer}`
+- Starts with {prefix:String}
+- Ends with {suffix:String}
+- Is not one of {possible_values:Strings}
+- Is one of {possible_values:Strings}
+- Has length between {min_val:Integer} and {max_val:Integer}
+- Has maximum length {max_len:Integer}
+- Has minimum length {min_len:Integer}
 - Is uppercase
+- Is lowercase
+- Matches regex {pattern:String}
+- Is valid email
+- Is valid URL
+- Has no digits
 
 #### NumericField - (Inherits from `BaseField`)
 
-- Not Zero
-- Positive
-- Negative
-- Minimum `{min_val:Number}`
-- Maximum `{max_val:Number}`
-- Greater than `{threshold:Number}`
-- Less than `{threshold:Number}`
-- Between `{min_val:Number}` and `{max_val:Number}`
+- Is not zero
+- Is positive
+- Is negative
+- Is at least {min_val:Number}
+- Is at most {max_val:Number}
+- Is greater than {threshold:Number}
+- Is less than {threshold:Number}
+- Is not between {min_val:Number} and {max_val:Number}
+- Is between {min_val:Number} and {max_val:Number}
 
 #### IntegerField  - (Inherits from `NumericField`)
 
 #### FloatField  - (Inherits from `NumericField`)
 
+- Has at most {decimal_places:Integer} decimal places
+
 ## Contributing
 
-Contributions are welcome! Feel free to submit issues or pull requests in the [GitHub repository](https://github.com/Kenr0t/data-sitter).
+Contributions are welcome! Feel free to submit issues or pull requests in the [GitHub repository](https://github.com/lcandea/data-sitter).
 
 ## License
 
