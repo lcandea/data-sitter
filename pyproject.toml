@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = 'data-sitter'
-version = "0.1.1"
+version = "0.1.4"
 description = "A Python library that reads data contracts and generates Pydantic models for seamless data validation."
 authors = [
     {name = 'Lázaro Pereira Candea', email = 'lazaro@candea.es'},
@@ -12,6 +12,7 @@ authors = [
 dependencies = [
     # Keep this in sync with setup.py
     "python-dotenv==1.0.1",
+    "PyYAML==6.0.2",
     "parse_type==0.6.4",
     "pydantic==2.10.5",
 ]

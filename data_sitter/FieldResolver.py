@@ -1,4 +1,3 @@
-
 from typing import  Dict, List, Type
 
 from .field_types import BaseField
@@ -32,8 +31,7 @@ class FieldResolver:
         return matched_rules
 
     def get_field_validator(self, field_name: str, parsed_rules: List[str]) -> BaseField:
-        is_optional = "Validate Not Null" not in parsed_rules
-        validator = self.field_class(field_name, is_optional)
+        validator = self.field_class(field_name)
         matched_rules = self.get_matched_rules(parsed_rules)
         for matched_rule in matched_rules:
             matched_rule.add_to_instance(validator)

@@ -1,8 +1,11 @@
+import json
+import yaml
 from typing import Any, Dict, List, NamedTuple
 from functools import cached_property
 
 from pydantic import BaseModel
 
+from .Validation import Validation
 from .field_types import BaseField
 from .FieldResolver import FieldResolver
 from .rules import MatchedRule, RuleRegistry, RuleParser
@@ -51,6 +54,14 @@ class Contract:
             values=contract_dict.get("values", {}),
         )
 
+    @classmethod
+    def from_json(cls, contract_json: str):
+        return cls.from_dict(json.loads(contract_json))
+
+    @classmethod
+    def from_yaml(cls, contract_yaml: str):
+        return cls.from_dict(yaml.load(contract_yaml, yaml.Loader))
+
     @cached_property
     def field_validators(self) -> Dict[str, BaseField]:
         field_validators = {}
@@ -68,10 +79,13 @@ class Contract:
         return rules
 
     def model_validate(self, item: dict):
-        pydantic_model = self.get_pydantic_model()
-        return pydantic_model.model_validate(item).model_dump()
+        return self.pydantic_model.model_validate(item).model_dump()
 
-    def get_pydantic_model(self) -> BaseModel:
+    def validate(self, item: dict) -> Validation:
+        return Validation.validate(self.pydantic_model, item)
+
+    @cached_property
+    def pydantic_model(self) -> BaseModel:
         return type(self.name, (BaseModel,), {
             "__annotations__": {
                 field_name: field_validator.get_annotation()
@@ -79,7 +93,28 @@ class Contract:
             }
         })
 
-    def get_front_end_contract(self):
+    @cached_property
+    def contract(self) -> dict:
+        return {
+            "name": self.name,
+            "fields": [
+                {
+                    "field_name": field_name,
+                    "field_type": field_validator.__class__.__name__,
+                    "field_rules": [rule.parsed_rule for rule in self.rules.get(field_name, [])]
+                }
+                for field_name, field_validator in self.field_validators.items()
+            ],
+            "values": self.rule_parser.values
+        }
+
+    def get_json_contract(self, indent: int=2) -> str:
+        return json.dumps(self.contract, indent=indent)
+
+    def get_yaml_contract(self, indent: int=2) -> str:
+        return yaml.dump(self.contract, Dumper=yaml.Dumper, indent=indent, sort_keys=False)
+
+    def get_front_end_contract(self) -> dict:
         return {
             "name": self.name,
             "fields": [

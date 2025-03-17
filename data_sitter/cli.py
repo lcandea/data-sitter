@@ -23,7 +23,7 @@ def main():
     contract_path = Path(args.contract)
     contract_dict = json.loads(contract_path.read_text(encoding))
     contract = Contract.from_dict(contract_dict)
-    pydantic_contract = contract.get_pydantic_model()
+    pydantic_contract = contract.pydantic_model
 
     if file_path.suffix == '.csv':
         with open(file_path, encoding=encoding) as f:
