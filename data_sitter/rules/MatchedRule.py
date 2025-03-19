@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 from .Rule import Rule
 from .RuleRegistry import RuleRegistry
+from .ProcessedRule import ProcessedRule
 from .Parser.parser_utils import get_value_from_reference
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ class InvalidFieldTypeError(TypeError):
     """Raised when attempting to add a rule to an incompatible field type."""
 
 
-class MatchedRule(Rule):
+class MatchedRule(ProcessedRule):
     parsed_rule: str
     parsed_values: Dict[str, Any]
     values: Dict[str, Any]
@@ -55,3 +56,11 @@ class MatchedRule(Rule):
                 f"Cannot add rule to {type(field_instance).__name__}, expected {self.field_type}."
             )
         self.rule_setter(self=field_instance, **self.resolved_values)
+
+    def get_front_end_repr(self):
+        return {
+            "rule": self.field_rule,
+            "parsed_rule": self.parsed_rule,
+            "rule_params": self.rule_params,
+            "parsed_values": self.parsed_values,
+        }
