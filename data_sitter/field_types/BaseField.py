@@ -1,11 +1,11 @@
 from abc import ABC
-from typing import Annotated, List, Optional, Type
+from typing import Annotated, Callable, List, Optional, Type
 
 from pydantic import AfterValidator
 from ..rules import register_rule, register_field
 
 
-def aggregated_validator(validators: List[callable], is_optional: bool):
+def aggregated_validator(validators: List[Callable], is_optional: bool):
     def _validator(value):
         if is_optional and value is None:
             return value
