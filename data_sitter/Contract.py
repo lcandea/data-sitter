@@ -75,7 +75,7 @@ class Contract:
         rules = {}
         for field in self.fields:
             field_resolver = self.field_resolvers[field.field_type]
-            rules[field.field_name] = field_resolver.get_matched_rules(field.field_rules)
+            rules[field.field_name] = field_resolver.get_processed_rules(field.field_rules)
         return rules
 
     def model_validate(self, item: dict):

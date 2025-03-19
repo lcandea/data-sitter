@@ -7,9 +7,9 @@ from .RuleRegistry import RuleRegistry, register_rule, register_field
 
 __all__ = [
     "Rule",
-    "ProcessedRule",
-    "MatchedRule",
     "RuleParser",
+    "MatchedRule",
+    "ProcessedRule",
     "RuleRegistry",
     "register_rule",
     "register_field",

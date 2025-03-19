@@ -5,14 +5,18 @@ from pydantic import AfterValidator
 from ..rules import register_rule, register_field
 
 
+class NotInitialisedError(Exception):
+    """The field instance is initialised without validators"""
+
+
 def aggregated_validator(validators: List[Callable], is_optional: bool):
-    def _validator(value):
+    def validator(value):
         if is_optional and value is None:
             return value
         for validator_func in validators:
             validator_func(value)
         return value
-    return _validator
+    return validator
 
 @register_field
 class BaseField(ABC):
@@ -24,11 +28,11 @@ class BaseField(ABC):
     def __init__(self, name: str) -> None:
         self.name = name
         self.is_optional = True
-        self.validators = []
+        self.validators = None
 
     @register_rule("Is not null")
     def validator_not_null(self):
-        def _validator(value):
+        def validator(value):
             if self.is_optional:
                 return value
             if value is None:
@@ -36,13 +40,17 @@ class BaseField(ABC):
             return value
 
         self.is_optional = False
-        self.validators.append(_validator)
+        return validator
 
     def validate(self, value):
+        if self.validators is None:
+            raise NotInitialisedError()
         for validator in self.validators:
             validator(value)
 
     def get_annotation(self):
+        if self.validators is None:
+            raise NotInitialisedError()
         field_type = Optional[self.field_type] if self.is_optional else self.field_type
         return Annotated[field_type, AfterValidator(aggregated_validator(self.validators, self.is_optional))]
 
