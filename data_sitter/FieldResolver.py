@@ -1,7 +1,7 @@
 from typing import  Dict, List, Type, Union
 
 from .field_types import BaseField
-from .rules import Rule, ProcessedRule, MatchedRule, RuleRegistry
+from .rules import Rule, ProcessedRule, LogicalRule, MatchedRule, RuleRegistry, LogicalOperator
 from .rules.Parser import RuleParser
 
 
@@ -35,7 +35,13 @@ class FieldResolver:
     def get_processed_rules(self, parsed_rules: List[Union[str, dict]]) -> List[ProcessedRule]:
         processed_rules = []
         for parsed_rule in parsed_rules:
-            if isinstance(parsed_rule, str):
+            if isinstance(parsed_rule, dict):
+                if len(keys := tuple(parsed_rule)) != 1 or (operator := keys[0]) not in LogicalOperator:
+                    raise MalformedLogicalRuleError()
+                if operator == LogicalOperator.NOT and not isinstance(parsed_rule[operator], list):
+                    parsed_rule = {operator: [parsed_rule[operator]]}  # NOT operator can be a single rule
+                processed_rule = LogicalRule(operator, self.get_processed_rules(parsed_rule[operator]))
+            elif isinstance(parsed_rule, str):
                 processed_rule = self._match_rule(parsed_rule)
                 if not processed_rule:
                     raise RuleNotFoundError(f"Rule not found for parsed rule: '{parsed_rule}'")

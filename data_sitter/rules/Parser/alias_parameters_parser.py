@@ -56,23 +56,3 @@ alias_parameters_types = {
     "String": parse_string,
     "Strings": parse_array_of("String", parse_string),
 }
-
-
-
-
-
-
-
-# class Store()
-#     pass
-
-
-# values = {"classes": ["UNCLASSIFIED"], "min_length": 5, "max_length": 50}
-
-
-# alias_parser = Parser("Value in {possible_values:Strings}", extra_types=alias_parameters_types)
-# # print(alias_parser.parse("Value In ['UNCLASSIFIED', 'CLASSIFIED']"))
-
-# with Store(values=values) as store:
-#     print(alias_parser.parse("Value In $values.classes"))
-#     print(store.)
