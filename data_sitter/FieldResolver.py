@@ -26,11 +26,11 @@ class FieldResolver:
         self._match_rule_cache = {}
 
     def get_field_validator(self, field_name: str, parsed_rules: List[Union[str, dict]]) -> BaseField:
-        validator = self.field_class(field_name)
+        field_validator = self.field_class(field_name)
         processed_rules = self.get_processed_rules(parsed_rules)
-        validators = [pr.get_validators(validator) for pr in processed_rules]
-        validator.validators = validators
-        return validator
+        validators = [pr.get_validator(field_validator) for pr in processed_rules]
+        field_validator.validators = validators
+        return field_validator
 
     def get_processed_rules(self, parsed_rules: List[Union[str, dict]]) -> List[ProcessedRule]:
         processed_rules = []

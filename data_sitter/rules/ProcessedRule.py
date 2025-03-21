@@ -7,12 +7,16 @@ from .Enums import LogicalOperator
 if TYPE_CHECKING:
     from ..field_types import BaseField
 
+MatchedParsedRule = str
+LogicalParsedRule = Dict[LogicalOperator, List["ParsedRule"]]
+ParsedRule = Union[MatchedParsedRule, LogicalParsedRule]
+
 
 class ProcessedRule(Rule, ABC):
-    parsed_rule: Union[str, Dict[LogicalOperator, List["ProcessedRule"]]]
+    parsed_rule: ParsedRule
 
     @abstractmethod
-    def get_validators(self, field_instance: "BaseField"):
+    def get_validator(self, field_instance: "BaseField"):
         raise NotImplementedError()
 
     @abstractmethod

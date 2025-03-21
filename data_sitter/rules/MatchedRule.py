@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Callable, Dict
 
 from .Rule import Rule
 from .RuleRegistry import RuleRegistry
-from .ProcessedRule import ProcessedRule
+from .ProcessedRule import ProcessedRule, MatchedParsedRule
 from .Parser.parser_utils import get_value_from_reference
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ class RuleParsedValuesMismatch(Exception):
 
 
 class MatchedRule(ProcessedRule):
-    parsed_rule: str
+    parsed_rule: MatchedParsedRule
     parsed_values: Dict[str, Any]
     values: Dict[str, Any]
 
@@ -45,13 +45,13 @@ class MatchedRule(ProcessedRule):
         if set(self.rule_params) != parsed_values_values:
             raise RuleParsedValuesMismatch(f"Rule Params: {self.rule_params}, Parsed Values: {parsed_values_values}")
 
-    def get_validators(self, field_instance: "BaseField"):
+    def get_validator(self, field_instance: "BaseField") -> Callable:
         field_class = RuleRegistry.get_type(self.field_type)
         if not isinstance(field_instance, field_class):
             raise TypeError(f"Cannot add rule to {type(field_instance).__name__}, expected {self.field_type}.")
         return self.rule_setter(self=field_instance, **self.resolved_values)
 
-    def get_front_end_repr(self):
+    def get_front_end_repr(self) -> dict:
         return {
             "rule": self.field_rule,
             "parsed_rule": self.parsed_rule,
