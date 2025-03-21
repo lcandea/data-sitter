@@ -14,4 +14,4 @@ class FloatField(NumericField):
             if len(str(value).split(".")[1]) > decimal_places:
                 raise ValueError(f"Value must have at most {decimal_places} decimal places.")
             return value
-        self.validators.append(validator)
+        return validator

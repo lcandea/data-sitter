@@ -1,23 +1,20 @@
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Callable, Dict
 
 from .Rule import Rule
 from .RuleRegistry import RuleRegistry
+from .ProcessedRule import ProcessedRule, MatchedParsedRule
 from .Parser.parser_utils import get_value_from_reference
 
 if TYPE_CHECKING:
-    from field_types import BaseField
+    from ..field_types import BaseField
 
 
 class RuleParsedValuesMismatch(Exception):
     pass
 
 
-class InvalidFieldTypeError(TypeError):
-    """Raised when attempting to add a rule to an incompatible field type."""
-
-
-class MatchedRule(Rule):
-    parsed_rule: str
+class MatchedRule(ProcessedRule):
+    parsed_rule: MatchedParsedRule
     parsed_values: Dict[str, Any]
     values: Dict[str, Any]
 
@@ -48,10 +45,16 @@ class MatchedRule(Rule):
         if set(self.rule_params) != parsed_values_values:
             raise RuleParsedValuesMismatch(f"Rule Params: {self.rule_params}, Parsed Values: {parsed_values_values}")
 
-    def add_to_instance(self, field_instance: "BaseField"):
+    def get_validator(self, field_instance: "BaseField") -> Callable:
         field_class = RuleRegistry.get_type(self.field_type)
         if not isinstance(field_instance, field_class):
-            raise InvalidFieldTypeError(
-                f"Cannot add rule to {type(field_instance).__name__}, expected {self.field_type}."
-            )
-        self.rule_setter(self=field_instance, **self.resolved_values)
+            raise TypeError(f"Cannot add rule to {type(field_instance).__name__}, expected {self.field_type}.")
+        return self.rule_setter(self=field_instance, **self.resolved_values)
+
+    def get_front_end_repr(self) -> dict:
+        return {
+            "rule": self.field_rule,
+            "parsed_rule": self.parsed_rule,
+            "rule_params": self.rule_params,
+            "parsed_values": self.parsed_values,
+        }

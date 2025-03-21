@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from .Validation import Validation
 from .field_types import BaseField
 from .FieldResolver import FieldResolver
-from .rules import MatchedRule, RuleRegistry, RuleParser
+from .rules import ProcessedRule, RuleRegistry, RuleParser
 
 
 class ContractWithoutFields(Exception):
@@ -71,11 +71,11 @@ class Contract:
         return field_validators
 
     @cached_property
-    def rules(self) -> Dict[str, List[MatchedRule]]:
+    def rules(self) -> Dict[str, List[ProcessedRule]]:
         rules = {}
         for field in self.fields:
             field_resolver = self.field_resolvers[field.field_type]
-            rules[field.field_name] = field_resolver.get_matched_rules(field.field_rules)
+            rules[field.field_name] = field_resolver.get_processed_rules(field.field_rules)
         return rules
 
     def model_validate(self, item: dict):
@@ -122,12 +122,7 @@ class Contract:
                     "field_name": field_name,
                     "field_type": field_validator.__class__.__name__,
                     "field_rules": [
-                        {
-                            "rule": rule.field_rule,
-                            "parsed_rule": rule.parsed_rule,
-                            "rule_params": rule.rule_params,
-                            "parsed_values": rule.parsed_values,
-                        }
+                        rule.get_front_end_repr()
                         for rule in self.rules.get(field_name, [])
                     ]
                 }

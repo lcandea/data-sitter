@@ -1,6 +1,6 @@
 from itertools import chain
 from collections import defaultdict
-from typing import TYPE_CHECKING, Dict, List, Type
+from typing import TYPE_CHECKING, Callable, Dict, List, Type
 
 from .Rule import Rule
 from ..utils.logger_config import get_logger
@@ -18,7 +18,7 @@ class RuleRegistry:
 
     @classmethod
     def register_rule(cls, field_rule: str, fixed_params: dict = None):
-        def _register(func: callable):
+        def _register(func: Callable):
             field_type, func_name = func.__qualname__.split(".")
             logger.debug("Registering function '%s' for %s. Rule: %s", func_name, field_type, field_rule)
 

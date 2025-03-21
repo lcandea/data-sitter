@@ -4,8 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = 'data-sitter'
-version = "0.1.4"
+version = "0.1.5"
 description = "A Python library that reads data contracts and generates Pydantic models for seamless data validation."
+readme = "README.md"
+requires-python = ">=3.8"
 authors = [
     {name = 'Lázaro Pereira Candea', email = 'lazaro@candea.es'},
 ]
