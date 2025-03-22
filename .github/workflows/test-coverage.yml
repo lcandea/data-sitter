@@ -1,0 +1,59 @@
+name: Test and Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        pip install coverage-badge
+        
+    - name: Run first set of tests
+      run: |
+        pytest --ignore=tests/test_contract.py --ignore=tests/test_cli.py --cov=data_sitter
+        
+    - name: Run second set of tests
+      run: |
+        pytest tests/test_contract.py tests/test_cli.py --cov=data_sitter --cov-append
+        
+    - name: Generate coverage report
+      run: |
+        coverage xml
+        coverage json
+        coverage report
+        coverage-badge -o coverage.svg -f
+        
+    - name: Upload coverage report to artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: |
+          coverage.xml
+          coverage.json
+          coverage.svg
+          
+    - name: Commit coverage badge
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git add coverage.svg
+        # Only commit if there are changes
+        git diff --staged --quiet || git commit -m "Update coverage badge" --allow-empty
+        git push

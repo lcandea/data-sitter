@@ -21,7 +21,7 @@ class NumericField(BaseField):
     @register_rule("Is positive")
     def validate_positive(self):
         def validator(value: Numeric):
-            if value < 0:
+            if value <= 0:
                 raise ValueError("Value must be positive.")
             return value
         return validator

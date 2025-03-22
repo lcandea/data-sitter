@@ -1,0 +1,7 @@
+pytest==8.3.5
+pytest-cov==6.0.0
+pytest-mock==3.14.0
+pydantic==2.10.5
+PyYAML==6.0.2
+parse-type==0.6.4
+python-dotenv==1.0.1

@@ -33,8 +33,6 @@ class BaseField(ABC):
     @register_rule("Is not null")
     def validator_not_null(self):
         def validator(value):
-            if self.is_optional:
-                return value
             if value is None:
                 raise ValueError("Value cannot be null.")
             return value

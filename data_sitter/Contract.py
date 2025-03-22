@@ -78,9 +78,6 @@ class Contract:
             rules[field.field_name] = field_resolver.get_processed_rules(field.field_rules)
         return rules
 
-    def model_validate(self, item: dict):
-        return self.pydantic_model.model_validate(item).model_dump()
-
     def validate(self, item: dict) -> Validation:
         return Validation.validate(self.pydantic_model, item)
 

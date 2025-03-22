@@ -6,7 +6,7 @@ from .Rule import Rule
 from ..utils.logger_config import get_logger
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from field_types.BaseField import BaseField
 
 logger = get_logger(__name__)

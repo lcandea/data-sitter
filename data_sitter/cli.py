@@ -44,5 +44,5 @@ def main():
     print(f"The file {args.file} pass the contract {args.contract}")
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     main()
