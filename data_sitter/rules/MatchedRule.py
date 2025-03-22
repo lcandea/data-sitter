@@ -5,7 +5,7 @@ from .RuleRegistry import RuleRegistry
 from .ProcessedRule import ProcessedRule, MatchedParsedRule
 from .Parser.parser_utils import get_value_from_reference
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..field_types import BaseField
 
 

@@ -1,5 +1,7 @@
 # Data-Sitter
 
+![Coverage](./coverage.svg)
+
 ## Overview
 
 Data-Sitter is a Python library designed to simplify data validation by converting data contracts into Pydantic models. This allows for easy and efficient validation of structured data, ensuring compliance with predefined rules and constraints.

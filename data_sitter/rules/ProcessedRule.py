@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Dict, List, Union
 from .Rule import Rule
 from .Enums import LogicalOperator
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..field_types import BaseField
 
 MatchedParsedRule = str
@@ -17,8 +17,8 @@ class ProcessedRule(Rule, ABC):
 
     @abstractmethod
     def get_validator(self, field_instance: "BaseField"):
-        raise NotImplementedError()
+        pass  # pragma: no cover
 
     @abstractmethod
     def get_front_end_repr(self) -> dict:
-        raise NotImplementedError()
+        pass  # pragma: no cover

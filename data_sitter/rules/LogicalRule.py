@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Callable, List
 from .Enums import LogicalOperator
 from .ProcessedRule import ProcessedRule, LogicalParsedRule
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..field_types import BaseField
 
 

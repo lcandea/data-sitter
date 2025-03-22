@@ -6,3 +6,4 @@ data_sitter.egg-info
 dist
 build
 
+.coverage
