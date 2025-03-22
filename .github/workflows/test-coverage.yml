@@ -5,12 +5,19 @@ on:
     branches: [ main ]
   pull_request:
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -38,7 +45,7 @@ jobs:
         coverage json
         coverage report
         coverage-badge -o coverage.svg -f
-        
+
     - name: Upload coverage report to artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -47,13 +54,16 @@ jobs:
           coverage.xml
           coverage.json
           coverage.svg
-          
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: true
+        
     - name: Commit coverage badge
       if: github.ref == 'refs/heads/main'
-      run: |
-        git config --global user.name 'GitHub Actions'
-        git config --global user.email 'actions@github.com'
-        git add coverage.svg
-        # Only commit if there are changes
-        git diff --staged --quiet || git commit -m "Update coverage badge" --allow-empty
-        git push
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Update coverage badge"
+        file_pattern: coverage.svg
