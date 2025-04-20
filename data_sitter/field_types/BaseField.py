@@ -2,6 +2,8 @@ from abc import ABC
 from typing import Annotated, Callable, List, Optional, Type
 
 from pydantic import AfterValidator
+
+from .FieldTypes import FieldTypes
 from ..rules import register_rule, register_field
 
 
@@ -24,6 +26,7 @@ class BaseField(ABC):
     is_optional: bool
     validators = None
     field_type = None
+    type_name = FieldTypes.BASE
 
     def __init__(self, name: str) -> None:
         self.name = name
@@ -54,11 +57,11 @@ class BaseField(ABC):
 
     @classmethod
     def get_parents(cls: Type["BaseField"]) -> List[Type["BaseField"]]:
-        if cls.__name__ == "BaseField":
+        if cls == BaseField:
             return []
-        ancestors = []
+        ancestors = set()
         for base in cls.__bases__:
-            if base.__name__.endswith("Field"):
-                ancestors.append(base)
-                ancestors.extend(base.get_parents())  # It wont break because we have a base case
-        return ancestors
+            if issubclass(base, BaseField):
+                ancestors.add(base)
+                ancestors.update(base.get_parents())
+        return list(ancestors)

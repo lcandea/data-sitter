@@ -25,8 +25,8 @@ class FieldResolver:
         self.rules = RuleRegistry.get_rules_for(field_class)
         self._match_rule_cache = {}
 
-    def get_field_validator(self, field_name: str, parsed_rules: List[Union[str, dict]]) -> BaseField:
-        field_validator = self.field_class(field_name)
+    def get_field_validator(self, name: str, parsed_rules: List[Union[str, dict]]) -> BaseField:
+        field_validator = self.field_class(name)
         processed_rules = self.get_processed_rules(parsed_rules)
         validators = [pr.get_validator(field_validator) for pr in processed_rules]
         field_validator.validators = validators

@@ -11,17 +11,17 @@ def sample_contract_dict():
         "name": "TestContract",
         "fields": [
             {
-                "field_name": "name",
-                "field_type": "StringField",
-                "field_rules": [
+                "name": "name",
+                "type": "String",
+                "rules": [
                     "Is not null",
                     "Has minimum length 3"
                 ]
             },
             {
-                "field_name": "age",
-                "field_type": "IntegerField",
-                "field_rules": [
+                "name": "age",
+                "type": "Integer",
+                "rules": [
                     "Is not null",
                     "Is at least 18"
                 ]
@@ -43,9 +43,9 @@ class TestContract:
         """Test basic contract creation from dictionary"""
         assert sample_contract.name == "TestContract"
         assert len(sample_contract.fields) == 2
-        assert sample_contract.fields[0].field_name == "name"
-        assert sample_contract.fields[0].field_type == "StringField"
-        assert "Is not null" in sample_contract.fields[0].field_rules
+        assert sample_contract.fields[0].name == "name"
+        assert sample_contract.fields[0].type == "String"
+        assert "Is not null" in sample_contract.fields[0].rules
 
     def test_from_dict(self, sample_contract_dict):
         """Test contract creation from dictionary"""
@@ -74,9 +74,9 @@ class TestContract:
         contract_dict = {
             "fields": [
                 {
-                    "field_name": "name",
-                    "field_type": "StringField",
-                    "field_rules": ["required"]
+                    "name": "name",
+                    "type": "String",
+                    "rules": ["required"]
                 }
             ]
         }
@@ -98,8 +98,8 @@ class TestContract:
         validators = sample_contract.field_validators
         assert "name" in validators
         assert "age" in validators
-        assert validators["name"].__class__.__name__ == "StringField"
-        assert validators["age"].__class__.__name__ == "IntegerField"
+        assert validators["name"].type_name == "String"
+        assert validators["age"].type_name == "Integer"
 
     def test_rules(self, sample_contract):
         """Test that rules are correctly parsed and processed"""
@@ -162,4 +162,4 @@ class TestContract:
         assert frontend_contract["name"] == "TestContract"
         assert len(frontend_contract["fields"]) == 2
         # Check that rules have front-end representation
-        assert isinstance(frontend_contract["fields"][0]["field_rules"], list)
+        assert isinstance(frontend_contract["fields"][0]["rules"], list)

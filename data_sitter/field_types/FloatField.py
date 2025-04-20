@@ -1,3 +1,4 @@
+from .FieldTypes import FieldTypes
 from .NumericField import NumericField
 from ..rules import register_field, register_rule
 from decimal import Decimal
@@ -6,6 +7,8 @@ from decimal import Decimal
 @register_field
 class FloatField(NumericField):
     field_type = float
+    type_name = FieldTypes.FLOAT
+
 
     @register_rule("Has at most {decimal_places:Integer} decimal places")
     def validate_max_decimal_places(self, decimal_places: int):

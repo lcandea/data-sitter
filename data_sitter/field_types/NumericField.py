@@ -1,6 +1,7 @@
 from typing import Union
 
 from .BaseField import BaseField
+from .FieldTypes import FieldTypes
 from ..rules import register_rule, register_field
 
 Numeric = Union[int, float]
@@ -9,6 +10,7 @@ Numeric = Union[int, float]
 @register_field
 class NumericField(BaseField):
     field_type = Numeric
+    type_name = FieldTypes.NUMERIC
 
     @register_rule("Is not zero")
     def validate_non_zero(self):

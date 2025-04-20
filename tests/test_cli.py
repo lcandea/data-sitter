@@ -1,6 +1,5 @@
 import json
 import pytest
-from pathlib import Path
 from unittest.mock import patch, MagicMock
 import argparse
 
@@ -13,17 +12,17 @@ def sample_contract_dict():
         "name": "TestContract",
         "fields": [
             {
-                "field_name": "name",
-                "field_type": "StringField",
-                "field_rules": [
+                "name": "name",
+                "type": "String",
+                "rules": [
                     "Is not null",
                     "Has minimum length 3"
                 ]
             },
             {
-                "field_name": "age",
-                "field_type": "IntegerField",
-                "field_rules": [
+                "name": "age",
+                "type": "Integer",
+                "rules": [
                     "Is not null",
                     "Is at least 18"
                 ]

@@ -20,9 +20,9 @@ class ContractWithoutName(Exception):
 
 
 class Field(NamedTuple):
-    field_name: str
-    field_type: str
-    field_rules: List[str]
+    name: str
+    type: str
+    rules: List[str]
 
 
 class Contract:
@@ -37,8 +37,8 @@ class Contract:
         self.fields = fields
         self.rule_parser = RuleParser(values)
         self.field_resolvers = {
-            field_type: FieldResolver(RuleRegistry.get_type(field_type), self.rule_parser)
-            for field_type in list({field.field_type for field in self.fields})  # Unique types
+            _type: FieldResolver(RuleRegistry.get_type(_type), self.rule_parser)
+            for _type in list({field.type for field in self.fields})  # Unique types
         }
 
     @classmethod
@@ -66,16 +66,16 @@ class Contract:
     def field_validators(self) -> Dict[str, BaseField]:
         field_validators = {}
         for field in self.fields:
-            field_resolver = self.field_resolvers[field.field_type]
-            field_validators[field.field_name] = field_resolver.get_field_validator(field.field_name, field.field_rules)
+            field_resolver = self.field_resolvers[field.type]
+            field_validators[field.name] = field_resolver.get_field_validator(field.name, field.rules)
         return field_validators
 
     @cached_property
     def rules(self) -> Dict[str, List[ProcessedRule]]:
         rules = {}
         for field in self.fields:
-            field_resolver = self.field_resolvers[field.field_type]
-            rules[field.field_name] = field_resolver.get_processed_rules(field.field_rules)
+            field_resolver = self.field_resolvers[field.type]
+            rules[field.name] = field_resolver.get_processed_rules(field.rules)
         return rules
 
     def validate(self, item: dict) -> Validation:
@@ -85,8 +85,8 @@ class Contract:
     def pydantic_model(self) -> BaseModel:
         return type(self.name, (BaseModel,), {
             "__annotations__": {
-                field_name: field_validator.get_annotation()
-                for field_name, field_validator in self.field_validators.items()
+                name: field_validator.get_annotation()
+                for name, field_validator in self.field_validators.items()
             }
         })
 
@@ -96,11 +96,11 @@ class Contract:
             "name": self.name,
             "fields": [
                 {
-                    "field_name": field_name,
-                    "field_type": field_validator.__class__.__name__,
-                    "field_rules": [rule.parsed_rule for rule in self.rules.get(field_name, [])]
+                    "name": name,
+                    "type": field_validator.type_name.value,
+                    "rules": [rule.parsed_rule for rule in self.rules.get(name, [])]
                 }
-                for field_name, field_validator in self.field_validators.items()
+                for name, field_validator in self.field_validators.items()
             ],
             "values": self.rule_parser.values
         }
@@ -116,14 +116,14 @@ class Contract:
             "name": self.name,
             "fields": [
                 {
-                    "field_name": field_name,
-                    "field_type": field_validator.__class__.__name__,
-                    "field_rules": [
+                    "name": name,
+                    "type": field_validator.type_name.value,
+                    "rules": [
                         rule.get_front_end_repr()
-                        for rule in self.rules.get(field_name, [])
+                        for rule in self.rules.get(name, [])
                     ]
                 }
-                for field_name, field_validator in self.field_validators.items()
+                for name, field_validator in self.field_validators.items()
             ],
             "values": self.rule_parser.values
         }
