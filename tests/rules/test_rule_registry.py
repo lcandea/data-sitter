@@ -1,4 +1,7 @@
+import pytest
 from unittest.mock import MagicMock, patch
+
+from data_sitter.rules.Rule import Rule
 from data_sitter.field_types.FieldTypes import FieldTypes
 from data_sitter.rules.RuleRegistry import RuleRegistry, register_rule, register_field
 
@@ -43,6 +46,16 @@ class TestRuleRegistry:
         if hasattr(BaseField.test_rule_fixed, '_rule_metadata'):
             delattr(BaseField.test_rule_fixed, '_rule_metadata')
 
+    def test_add_rule(self):
+        rule = Rule(
+            field_type = FieldTypes.BASE,
+            field_rule = "Test rule with {param:Integer}",
+            rule_setter=BaseField.test_rule
+        )
+        with pytest.raises(ValueError, match="Field not registered: Base"):
+            RuleRegistry.add_rule(BaseField, rule)
+
+
     def test_register_rule_decorator(self):
         """Test register_rule decorator functionality using a real decorator with patched Rule"""
         # Adding a rule to the existing class
@@ -57,13 +70,6 @@ class TestRuleRegistry:
     @patch('data_sitter.rules.RuleRegistry.Rule')
     def test_register_rule_with_fixed_params(self, mock_rule):
         """Test register_rule with fixed parameters"""
-        # # Setup mock Rule to return a configured rule object
-        # rule_instance = MagicMock()
-        # rule_instance.field_type = "BaseField"
-        # rule_instance.field_rule = "Test with fixed param"
-        # rule_instance.fixed_params = {"fixed_param": 42}
-        # mock_rule.return_value = rule_instance
-
         # Adding a rule to the existing class function
         register_rule("Test with fixed param", fixed_params={"fixed_param": 42})(BaseField.test_rule_fixed)
 
@@ -72,20 +78,6 @@ class TestRuleRegistry:
         rule_metadata = getattr(BaseField.test_rule_fixed, '_rule_metadata')
         assert rule_metadata.rule == "Test with fixed param"
         assert rule_metadata.fixed_params == {"fixed_param": 42}
-
-
-
-        # # Verify Rule was created with correct args
-        # mock_rule.assert_called_once()
-        # args, kwargs = mock_rule.call_args
-        # assert args[0] == "BaseField"  # field_type
-        # assert args[1] == "Test with fixed param"  # field_rule
-        # assert args[2].__name__ == "test_rule_fixed"  # rule_setter
-        # assert args[3] == {"fixed_param": 42}  # Check fixed params
-
-        # # Check the rules list
-        # assert len(RuleRegistry.rules["BaseField"]) == 1
-        # assert RuleRegistry.rules["BaseField"][0].fixed_params == {"fixed_param": 42}
 
     @patch('data_sitter.rules.RuleRegistry.Rule')
     def test_register_field_decorator(self, mock_rule):
