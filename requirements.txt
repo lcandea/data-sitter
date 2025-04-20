@@ -1,6 +1,0 @@
-setuptools
-wheel
-twine
-parse-type
-python-dotenv
-pydantic

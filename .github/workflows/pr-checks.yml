@@ -26,7 +26,7 @@ jobs:
         run: |
           # Get the current version from main branch
           git fetch origin main
-          MAIN_VERSION=$(git show origin/main:pyproject.toml | python -c "import tomli; import sys; print(tomli.load(sys.stdin)['project']['version'])")
+          MAIN_VERSION=$(git show origin/main:pyproject.toml | python -c "import tomli; import sys; print(tomli.load(sys.stdin.buffer)['project']['version'])")
           
           # Get the version from the PR
           PR_VERSION=$(python -c "import tomli; import sys; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])")
