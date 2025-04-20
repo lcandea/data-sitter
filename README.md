@@ -19,6 +19,68 @@ Data-Sitter is a Python library designed to simplify data validation by converti
 pip install data-sitter
 ```
 
+## Development and Deployment
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment:
+
+1. **Pull Request Checks**
+   - Automatically checks if the version has been bumped in `pyproject.toml`
+   - Fails if the version is the same as in the main branch
+   - Ensures every PR includes a version update
+
+2. **Automatic Releases**
+   - When code is merged to the main branch:
+     - Builds the package
+     - Publishes to PyPI automatically
+   - Uses PyPI API token for secure authentication
+
+To set up the CI/CD pipeline:
+
+1. Create a PyPI API token:
+   - Go to [PyPI Account Settings](https://pypi.org/manage/account/)
+   - Create a new API token with "Upload" scope
+   - Copy the token
+
+2. Add the token to GitHub:
+   - Go to your repository's Settings > Secrets and variables > Actions
+   - Create a new secret named `PYPI_API_TOKEN`
+   - Paste your PyPI API token
+
+### Setting Up Development Environment
+
+To set up a development environment with all the necessary tools, install the package with development dependencies:
+
+```sh
+pip install -e ".[dev]"
+```
+
+This will install:
+- The package in editable mode
+- Testing tools (pytest, pytest-cov, pytest-mock)
+- Build tools (build, twine)
+
+### Building the Package
+
+To build the package, run:
+
+```sh
+python -m build
+```
+
+This will create a `dist` directory containing both a source distribution (`.tar.gz`) and a wheel (`.whl`).
+
+### Deploying to PyPI
+
+To upload to PyPI:
+
+```sh
+twine upload dist/*
+```
+
+You'll be prompted for your PyPI username and password. For security, it's recommended to use an API token instead of your password.
+
 ## Usage
 
 ### Creating a Pydantic Model from a Contract

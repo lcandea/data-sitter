@@ -12,11 +12,19 @@ authors = [
     {name = 'Lázaro Pereira Candea', email = 'lazaro@candea.es'},
 ]
 dependencies = [
-    # Keep this in sync with setup.py
     "python-dotenv==1.0.1",
     "PyYAML==6.0.2",
     "parse_type==0.6.4",
     "pydantic==2.10.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "pytest-cov==6.0.0",
+    "pytest-mock==3.14.0",
+    "twine==6.1.0",
+    "build==1.2.2.post1",
 ]
 
 [project.scripts]

@@ -15,10 +15,10 @@ class BaseField:
         return []
 
     def test_rule(self, param):
-        return lambda x: x
+        return lambda x: x, param
 
     def test_rule_fixed(self, fixed_param):
-        return lambda x: x
+        return lambda x: x, fixed_param
 
 
 class MiddleField:
@@ -67,8 +67,7 @@ class TestRuleRegistry:
         assert rule_metadata.rule == "Test rule with {param:Integer}"
         assert rule_metadata.fixed_params == {}
 
-    @patch('data_sitter.rules.RuleRegistry.Rule')
-    def test_register_rule_with_fixed_params(self, mock_rule):
+    def test_register_rule_with_fixed_params(self):
         """Test register_rule with fixed parameters"""
         # Adding a rule to the existing class function
         register_rule("Test with fixed param", fixed_params={"fixed_param": 42})(BaseField.test_rule_fixed)
