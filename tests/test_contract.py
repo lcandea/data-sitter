@@ -12,7 +12,7 @@ def sample_contract_dict():
         "fields": [
             {
                 "name": "name",
-                "type": "StringField",
+                "type": "String",
                 "rules": [
                     "Is not null",
                     "Has minimum length 3"
@@ -20,7 +20,7 @@ def sample_contract_dict():
             },
             {
                 "name": "age",
-                "type": "IntegerField",
+                "type": "Integer",
                 "rules": [
                     "Is not null",
                     "Is at least 18"
@@ -44,7 +44,7 @@ class TestContract:
         assert sample_contract.name == "TestContract"
         assert len(sample_contract.fields) == 2
         assert sample_contract.fields[0].name == "name"
-        assert sample_contract.fields[0].type == "StringField"
+        assert sample_contract.fields[0].type == "String"
         assert "Is not null" in sample_contract.fields[0].rules
 
     def test_from_dict(self, sample_contract_dict):
@@ -75,7 +75,7 @@ class TestContract:
             "fields": [
                 {
                     "name": "name",
-                    "type": "StringField",
+                    "type": "String",
                     "rules": ["required"]
                 }
             ]
@@ -98,8 +98,8 @@ class TestContract:
         validators = sample_contract.field_validators
         assert "name" in validators
         assert "age" in validators
-        assert validators["name"].__class__.__name__ == "StringField"
-        assert validators["age"].__class__.__name__ == "IntegerField"
+        assert validators["name"].type_name == "String"
+        assert validators["age"].type_name == "Integer"
 
     def test_rules(self, sample_contract):
         """Test that rules are correctly parsed and processed"""

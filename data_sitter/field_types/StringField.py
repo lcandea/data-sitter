@@ -2,12 +2,14 @@ import re
 from typing import List
 
 from .BaseField import BaseField
+from .FieldTypes import FieldTypes
 from ..rules import register_rule, register_field
 
 
 @register_field
 class StringField(BaseField):
     field_type = str
+    type_name = FieldTypes.STRING
 
     @register_rule("Is not empty")
     def validate_not_empty(self):

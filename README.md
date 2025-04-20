@@ -32,14 +32,14 @@ contract_dict = {
     "name": "test",
     "fields": [
         {
-            "field_name": "FID",
-            "field_type": "IntegerField",
-            "field_rules": ["Positive"]
+            "name": "FID",
+            "type": "Integer",
+            "rules": ["Positive"]
         },
         {
-            "field_name": "SECCLASS",
-            "field_type": "StringField",
-            "field_rules": [
+            "name": "SECCLASS",
+            "type": "String",
+            "rules": [
                 "Validate Not Null",
                 "Value In ['UNCLASSIFIED', 'CLASSIFIED']",
             ]
@@ -60,14 +60,14 @@ Data-Sitter allows you to define reusable values in the `values` key and referen
     "name": "example_contract",
     "fields": [
         {
-            "field_name": "CATEGORY",
-            "field_type": "StringField",
-            "field_rules": ["Value In $values.categories"]
+            "name": "CATEGORY",
+            "type": "String",
+            "rules": ["Value In $values.categories"]
         },
         {
-            "field_name": "NAME",
-            "field_type": "StringField",
-            "field_rules": [
+            "name": "NAME",
+            "type": "String",
+            "rules": [
                 "Length Between $values.min_length and $values.max_length"
             ]
         }
@@ -92,11 +92,11 @@ print(rules)
 
 Below are the available rules grouped by field type:
 
-#### BaseField
+#### Base
 
 - Is not null
 
-#### StringField - (Inherits from `BaseField`)
+#### String - (Inherits from `Base`)
 
 - Is not empty
 - Starts with {prefix:String}
@@ -113,7 +113,7 @@ Below are the available rules grouped by field type:
 - Is valid URL
 - Has no digits
 
-#### NumericField - (Inherits from `BaseField`)
+#### Numeric - (Inherits from `Base`)
 
 - Is not zero
 - Is positive
@@ -125,9 +125,9 @@ Below are the available rules grouped by field type:
 - Is not between {min_val:Number} and {max_val:Number}
 - Is between {min_val:Number} and {max_val:Number}
 
-#### IntegerField  - (Inherits from `NumericField`)
+#### Integer  - (Inherits from `Numeric`)
 
-#### FloatField  - (Inherits from `NumericField`)
+#### Float  - (Inherits from `Numeric`)
 
 - Has at most {decimal_places:Integer} decimal places
 

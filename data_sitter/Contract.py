@@ -97,7 +97,7 @@ class Contract:
             "fields": [
                 {
                     "name": name,
-                    "type": field_validator.__class__.__name__,
+                    "type": field_validator.type_name.value,
                     "rules": [rule.parsed_rule for rule in self.rules.get(name, [])]
                 }
                 for name, field_validator in self.field_validators.items()
@@ -117,7 +117,7 @@ class Contract:
             "fields": [
                 {
                     "name": name,
-                    "type": field_validator.__class__.__name__,
+                    "type": field_validator.type_name.value,
                     "rules": [
                         rule.get_front_end_repr()
                         for rule in self.rules.get(name, [])
