@@ -49,11 +49,11 @@ class RuleRegistry:
     def get_rules_definition(cls):
         return [
             {
-                "field": field_name,
+                "field": name,
                 "parent_field": [p.__name__ for p in field_class.get_parents()],
-                "rules": cls.rules.get(field_name, [])
+                "rules": cls.rules.get(name, [])
             }
-            for field_name, field_class in cls.type_map.items()
+            for name, field_class in cls.type_map.items()
         ]
 
 

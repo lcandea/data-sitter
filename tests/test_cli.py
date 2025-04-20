@@ -13,17 +13,17 @@ def sample_contract_dict():
         "name": "TestContract",
         "fields": [
             {
-                "field_name": "name",
-                "field_type": "StringField",
-                "field_rules": [
+                "name": "name",
+                "type": "StringField",
+                "rules": [
                     "Is not null",
                     "Has minimum length 3"
                 ]
             },
             {
-                "field_name": "age",
-                "field_type": "IntegerField",
-                "field_rules": [
+                "name": "age",
+                "type": "IntegerField",
+                "rules": [
                     "Is not null",
                     "Is at least 18"
                 ]
