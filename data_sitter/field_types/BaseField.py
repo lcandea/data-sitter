@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Annotated, Callable, List, Optional, Type
 
-from pydantic import AfterValidator
+from pydantic import AfterValidator, Field
 
 from .FieldTypes import FieldTypes
 from ..rules import register_rule, register_field
@@ -23,13 +23,15 @@ def aggregated_validator(validators: List[Callable], is_optional: bool):
 @register_field
 class BaseField(ABC):
     name: str
+    description: str
     is_optional: bool
     validators = None
     field_type = None
     type_name = FieldTypes.BASE
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, description: str = None) -> None:
         self.name = name
+        self.description = description
         self.is_optional = True
         self.validators = None
 
@@ -53,7 +55,11 @@ class BaseField(ABC):
         if self.validators is None:
             raise NotInitialisedError()
         field_type = Optional[self.field_type] if self.is_optional else self.field_type
-        return Annotated[field_type, AfterValidator(aggregated_validator(self.validators, self.is_optional))]
+        return Annotated[
+            field_type,
+            Field(description=self.description),
+            AfterValidator(aggregated_validator(self.validators, self.is_optional))
+        ]
 
     @classmethod
     def get_parents(cls: Type["BaseField"]) -> List[Type["BaseField"]]:

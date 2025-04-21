@@ -13,6 +13,7 @@ def sample_contract_dict():
             {
                 "name": "name",
                 "type": "String",
+                "description": "The name of the person",
                 "rules": [
                     "Is not null",
                     "Has minimum length 3"
@@ -142,19 +143,27 @@ class TestContract:
         assert "age" in validation.errors
         assert validation.unknowns == {"extra": "value"}
 
-    def test_get_json_contract(self, sample_contract):
-        """Test JSON contract generation"""
-        json_contract = sample_contract.get_json_contract()
-        contract_dict = json.loads(json_contract)
-        assert contract_dict["name"] == "TestContract"
-        assert len(contract_dict["fields"]) == 2
+    def test_contract_property(self, sample_contract, sample_contract_dict):
+        """Test contract property"""
+        assert sample_contract.contract == sample_contract_dict
 
-    def test_get_yaml_contract(self, sample_contract):
+    def test_to_json(self, sample_contract, sample_contract_dict):
+        """Test JSON contract generation"""
+        json_contract = sample_contract.to_json()
+        contract_dict = json.loads(json_contract)
+        assert contract_dict == sample_contract_dict
+
+    def test_to_yaml(self, sample_contract, sample_contract_dict):
         """Test YAML contract generation"""
-        yaml_contract = sample_contract.get_yaml_contract()
+        yaml_contract = sample_contract.to_yaml()
         contract_dict = yaml.safe_load(yaml_contract)
-        assert contract_dict["name"] == "TestContract"
-        assert len(contract_dict["fields"]) == 2
+        assert contract_dict == sample_contract_dict
+
+    def test_to_json_schema(self, sample_contract):
+        """Test JSON schema generation"""
+        json_schema = sample_contract.to_json_schema()
+        assert json_schema["title"] == "TestContract"
+        assert len(json_schema["properties"]) == 2
 
     def test_get_front_end_contract(self, sample_contract):
         """Test front-end contract representation"""
