@@ -59,11 +59,11 @@ class TestFieldResolver:
 
         with patch.object(field_resolver, 'get_processed_rules', return_value=[mock_processed_rule]):
             # Call the method
-            result = field_resolver.get_field_validator("test_field", ["rule1", "rule2"])
+            result = field_resolver.get_field_validator("test_field", ["rule1", "rule2"], "test_description")
 
             # Assertions
             assert result == mock_field_instance
-            mock_field_class.assert_called_once_with("test_field")
+            mock_field_class.assert_called_once_with("test_field", "test_description")
             mock_processed_rule.get_validator.assert_called_once_with(mock_field_instance)
             assert mock_field_instance.validators == [mock_validator]
 

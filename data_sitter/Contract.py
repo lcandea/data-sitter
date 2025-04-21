@@ -22,7 +22,8 @@ class ContractWithoutName(Exception):
 class Field(NamedTuple):
     name: str
     type: str
-    rules: List[str]
+    description: str = None
+    rules: List[str] = []
 
 
 class Contract:
@@ -67,7 +68,9 @@ class Contract:
         field_validators = {}
         for field in self.fields:
             field_resolver = self.field_resolvers[field.type]
-            field_validators[field.name] = field_resolver.get_field_validator(field.name, field.rules)
+            field_validators[field.name] = field_resolver.get_field_validator(
+                field.name, field.rules, field.description
+            )
         return field_validators
 
     @cached_property
@@ -98,6 +101,7 @@ class Contract:
                 {
                     "name": name,
                     "type": field_validator.type_name.value,
+                    **({"description": field_validator.description} if field_validator.description is not None else {}),
                     "rules": [rule.parsed_rule for rule in self.rules.get(name, [])]
                 }
                 for name, field_validator in self.field_validators.items()
@@ -105,11 +109,14 @@ class Contract:
             "values": self.rule_parser.values
         }
 
-    def get_json_contract(self, indent: int=2) -> str:
-        return json.dumps(self.contract, indent=indent)
+    def to_json(self, indent: int=2) -> str:
+        return json.dumps(self.contract, indent=indent, sort_keys=False)
 
-    def get_yaml_contract(self, indent: int=2) -> str:
+    def to_yaml(self, indent: int=2) -> str:
         return yaml.dump(self.contract, Dumper=yaml.Dumper, indent=indent, sort_keys=False)
+
+    def to_json_schema(self) -> dict:
+        return self.pydantic_model.model_json_schema()
 
     def get_front_end_contract(self) -> dict:
         return {
